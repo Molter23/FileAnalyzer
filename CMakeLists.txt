@@ -3,6 +3,8 @@ project(FileAnalyzer)
 
 set(CMAKE_CXX_STANDARD 17)
 
+link_libraries(stdc++fs)
+
 include_directories(src)
 
 add_subdirectory(src)

@@ -1,8 +1,15 @@
 #include<iostream>
+#include<experimental/filesystem>
+#include<fstream>
 
-int main(int argc, char ** argv)
+namespace fs = std::experimental::filesystem;
+
+int main(int argc, char** argv)
 {
-    std::cout <<"Hello, Word" << std::endl;
-
     
+    for (auto const& dir_entry : fs::recursive_directory_iterator("/"))
+    {
+        std::cout << dir_entry << '\n';
+    }
+
 }
