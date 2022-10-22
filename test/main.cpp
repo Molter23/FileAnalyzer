@@ -26,6 +26,21 @@ TEST(ValidationInputTests, CorrectPathShoulNotThrow)
    ASSERT_NO_THROW(validatePath("/"));
 }
 
+TEST(ValidationInputTests, ValidateInputExitCode)
+{
+    char* first_arg = "programName";
+    char* second_arg = "path";
+    char* third_arg = "somethingElse";
+
+    char** argv = new char*;
+    argv[0] = first_arg;
+    argv[1] = second_arg; 
+    argv[2] = third_arg;
+
+    ASSERT_EXIT(validateInput(3, argv), ::testing::ExitedWithCode(1), "Wrong input");
+}
+
+
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
