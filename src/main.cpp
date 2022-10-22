@@ -7,8 +7,8 @@
 #include<thread>
 
 #include "InputValidation.hpp"
+#include "Statistic.hpp"
 #include "DataWrapper.cpp"
-#include "Statistic.cpp"
 
 namespace fs = std::experimental::filesystem;
 
@@ -51,15 +51,7 @@ void collectAllFiles(const std::string& dirName, DataWrapper& data, Statistic& s
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const Statistic& obj)
-{
-    return os << "Number of directories: " << obj.numberOfDiretories << std::endl << "Number of lines: " << obj.numberOfLines << std::endl;
-}
-
-DataWrapper DataWrapper::_dwInstance;
-Statistic Statistic::_sInstance;
-
-unsigned int  calculateNumberOfThreads(unsigned int requiredNumberOfThreads)
+unsigned int calculateNumberOfThreads(unsigned int requiredNumberOfThreads)
 {
     unsigned int numberOfPhysicalThread = std::thread::hardware_concurrency();
     unsigned int numberOfThreads = std::min(requiredNumberOfThreads, numberOfPhysicalThread);
@@ -89,6 +81,7 @@ void startCounting(const DataWrapper& data, Statistic& statistics, unsigned int 
         thread.join();
 }
 
+DataWrapper DataWrapper::_dwInstance;
 
 int main(int argc, char** argv)
 {      

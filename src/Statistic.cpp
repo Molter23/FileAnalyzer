@@ -3,25 +3,20 @@
 #include<vector>
 #include<atomic>
 
+#include "Statistic.hpp"
+
 namespace fs = std::experimental::filesystem;
 
-class Statistic
+Statistic& Statistic::get()
 {
-public:
-    std::atomic<uint64_t> numberOfLines{0};
-    uint64_t numberOfDiretories {0};
-
-    static Statistic& get()
-    {
-        return _sInstance;
-    }
-
-    Statistic(const Statistic&) = delete;
-
-private:
-    Statistic() {}
     static Statistic _sInstance;
-};
+    return _sInstance; 
+}
 
+Statistic::Statistic() {};
 
+std::ostream& operator<<(std::ostream& os, const Statistic& obj)
+{
+    return os << "Number of directories: " << obj.numberOfDiretories << std::endl << "Number of lines: " << obj.numberOfLines << std::endl;
+}
 
