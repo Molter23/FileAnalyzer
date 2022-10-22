@@ -39,6 +39,7 @@ std::string validateInput(int argc, char** argv)
         std::cout << e.what() << std::endl;
         std::string programName = argv[0];
         usage(programName);
+        std::cerr << "Wrong input" << std::endl;
         exit(EXIT_FAILURE);
     }       
     
