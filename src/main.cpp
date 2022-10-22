@@ -11,22 +11,22 @@
 
 namespace fs = std::experimental::filesystem;
 
-void callculateNumberOfLines(const std::vector<fs::directory_entry>& fillesInAllDirectories)
+void callculateNumberOfLines(DataWrapper& data, unsigned int start,  unsigned int end)
 {
     unsigned int numberOfLines = 0;
     std::string line;
 
-    for (auto pathToFile : fillesInAllDirectories)
+    for (int i = start; i < end; i++)
     {
-        std::cout << pathToFile << std::endl;
-        std::ifstream file(pathToFile.path());
+        std::ifstream file(data.fillesInAllDirectories[i].path());
 
         while(std::getline(file, line))
         {
             numberOfLines++;
         }
 
-        std::cout<< "Numer of lines in a file: " << numberOfLines << std::endl;
+        data.numberOfLines += numberOfLines;
+
         numberOfLines = 0;
     }
 }
@@ -42,6 +42,7 @@ void collectAllFiles(const std::string& dirName, DataWrapper& data, std::size_t 
                 data.fillesInAllDirectories.emplace_back(std::move(path));
             }
         }
+        data.numberOfDiretories = data.fillesInAllDirectories.size();
     }
     catch(fs::filesystem_error& e)
     {
@@ -49,7 +50,14 @@ void collectAllFiles(const std::string& dirName, DataWrapper& data, std::size_t 
     }
 }
 
+std::ostream& operator<<(std::ostream& os, const DataWrapper& obj)
+{
+    return os << "Number of directories: " << obj.numberOfDiretories << std::endl << "Number of lines: " << obj.numberOfLines << std::endl;
+}
+
 DataWrapper DataWrapper::_dwInstance;
+
+
 
 int main(int argc, char** argv)
 {      
@@ -57,6 +65,8 @@ int main(int argc, char** argv)
     
     auto dirName = validateInput(argc, argv);
     collectAllFiles(dirName, data);
-    std::cout<< DataWrapper::get().fillesInAllDirectories.size();
+    callculateNumberOfLines(data, 0, data.fillesInAllDirectories.size());
+    std::cout<< data;
+  
 
 }

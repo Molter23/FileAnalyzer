@@ -1,4 +1,4 @@
-#include <iostream>
+#include<iostream>
 #include<experimental/filesystem>
 #include<vector>
 
@@ -8,7 +8,7 @@ class DataWrapper
 {
 public:
     uint64_t numberOfLines {0};
-    uint64_t numberOfDictionares {0};
+    uint64_t numberOfDiretories {0};
 
     std::vector<fs::directory_entry> fillesInAllDirectories;
 
@@ -19,9 +19,10 @@ public:
 
     DataWrapper(const DataWrapper&) = delete;
 
-
 private:
     DataWrapper() {}
     static DataWrapper _dwInstance;
 };
+
+
 
