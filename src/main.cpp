@@ -59,10 +59,15 @@ std::ostream& operator<<(std::ostream& os, const Statistic& obj)
 DataWrapper DataWrapper::_dwInstance;
 Statistic Statistic::_sInstance;
 
-void startCounting(DataWrapper& data, Statistic& statistics, unsigned int requiredNumberOfThreads = 4)
+unsigned int  calculateNumberOfThreads(unsigned int requiredNumberOfThreads)
 {
     unsigned int numberOfPhysicalThread = std::thread::hardware_concurrency();
     unsigned int numberOfThreads = std::min(requiredNumberOfThreads, numberOfPhysicalThread);
+}
+
+void startCounting(const DataWrapper& data, Statistic& statistics, unsigned int requiredNumberOfThreads = 4)
+{
+    unsigned int numberOfThreads = calculateNumberOfThreads(requiredNumberOfThreads);
 
     std::vector<std::thread> threads(numberOfThreads);
 
@@ -92,9 +97,6 @@ int main(int argc, char** argv)
     
     auto dirName = validateInput(argc, argv);
     collectAllFiles(dirName, data, statistics);
-   //callculateNumberOfLines(data, 0, data.fillesInAllDirectories.size());
     startCounting(data, statistics);
     std::cout<< statistics;
-  
-
 }
