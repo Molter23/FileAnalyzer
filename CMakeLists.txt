@@ -4,6 +4,7 @@ project(FileAnalyzer)
 set(CMAKE_CXX_STANDARD 17)
 
 link_libraries(stdc++fs)
+link_libraries(-pthread)
 
 include_directories(src)
 

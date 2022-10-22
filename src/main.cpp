@@ -25,7 +25,7 @@ void callculateNumberOfLines(DataWrapper& data, unsigned int start,  unsigned in
             numberOfLines++;
         }
 
-        data.numberOfLines += numberOfLines;
+        data.numberOfLines.fetch_add(numberOfLines);
 
         numberOfLines = 0;
     }
@@ -57,6 +57,30 @@ std::ostream& operator<<(std::ostream& os, const DataWrapper& obj)
 
 DataWrapper DataWrapper::_dwInstance;
 
+void startCounting(DataWrapper& data, unsigned int requiredNumberOfThreads = 4)
+{
+    unsigned int numberOfPhysicalThread = std::thread::hardware_concurrency();
+    unsigned int numberOfThreads = std::min(requiredNumberOfThreads, numberOfPhysicalThread);
+
+    std::vector<std::thread> threads(numberOfThreads);
+
+    unsigned int blockSize = (numberOfThreads + data.fillesInAllDirectories.size() - 1)/ numberOfThreads; //hack to make ceil with int type
+    unsigned int start = 0, end = blockSize;
+
+    for (int i = 0; i < numberOfThreads; i++)
+    {
+        threads[i] = std::thread(callculateNumberOfLines, std::ref(data), start, end);
+
+        start += blockSize;
+        end += blockSize;
+        
+        if(end > data.fillesInAllDirectories.size())
+            end = data.fillesInAllDirectories.size() - 1;
+    }
+    
+    for (std::thread& thread : threads)
+        thread.join();
+}
 
 
 int main(int argc, char** argv)
@@ -65,7 +89,8 @@ int main(int argc, char** argv)
     
     auto dirName = validateInput(argc, argv);
     collectAllFiles(dirName, data);
-    callculateNumberOfLines(data, 0, data.fillesInAllDirectories.size());
+   //callculateNumberOfLines(data, 0, data.fillesInAllDirectories.size());
+   startCounting(data);
     std::cout<< data;
   
 
