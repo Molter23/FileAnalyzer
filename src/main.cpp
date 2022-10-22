@@ -7,27 +7,9 @@
 #include<thread>
 
 #include "InputValidation.hpp"
-
+#include "DataWrapper.cpp"
 
 namespace fs = std::experimental::filesystem;
-
-void collectAllFiles(const std::string& dirName, std::vector<fs::directory_entry>& fillesInAllDirectories, std::size_t capacityToReserve = 1000)
-{
-    fillesInAllDirectories.reserve(capacityToReserve);
-    
-    try{
-        for (auto const& path : fs::recursive_directory_iterator(dirName))
-        {
-            if(fs::is_regular_file(fs::status(path))){    
-                fillesInAllDirectories.emplace_back(std::move(path));
-            }
-        }
-    }
-    catch(fs::filesystem_error& e)
-    {
-      std::cout << "Unable to access file." << std::endl;
-    }
-}
 
 void callculateNumberOfLines(const std::vector<fs::directory_entry>& fillesInAllDirectories)
 {
@@ -49,13 +31,32 @@ void callculateNumberOfLines(const std::vector<fs::directory_entry>& fillesInAll
     }
 }
 
+void collectAllFiles(const std::string& dirName, DataWrapper& data, std::size_t capacityToReserve = 1000)
+{
+    data.fillesInAllDirectories.reserve(capacityToReserve);
+    
+    try{
+        for (auto const& path : fs::recursive_directory_iterator(dirName))
+        {
+            if(fs::is_regular_file(fs::status(path))){    
+                data.fillesInAllDirectories.emplace_back(std::move(path));
+            }
+        }
+    }
+    catch(fs::filesystem_error& e)
+    {
+      std::cout << "Unable to access file." << std::endl;
+    }
+}
 
-
+DataWrapper DataWrapper::_dwInstance;
 
 int main(int argc, char** argv)
 {      
-    std::vector<fs::directory_entry> fillesInAllDirectories;
+    DataWrapper& data = DataWrapper::get();
+    
     auto dirName = validateInput(argc, argv);
-    collectAllFiles(dirName, fillesInAllDirectories);
-    callculateNumberOfLines(fillesInAllDirectories);
+    collectAllFiles(dirName, data);
+    std::cout<< DataWrapper::get().fillesInAllDirectories.size();
+
 }
