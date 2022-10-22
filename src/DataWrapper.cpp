@@ -4,22 +4,16 @@
 
 namespace fs = std::experimental::filesystem;
 
-class DataWrapper
+#include "DataWrapper.hpp"
+
+DataWrapper& DataWrapper::get()
 {
-public:
-    std::vector<fs::directory_entry> fillesInAllDirectories;
-
-    static DataWrapper& get()
-    {
-        return _dwInstance;
-    }
-
-    DataWrapper(const DataWrapper&) = delete;
-
-private:
-    DataWrapper() {}
     static DataWrapper _dwInstance;
-};
+    return _dwInstance;
+}
+
+DataWrapper::DataWrapper() {}
+
 
 
 

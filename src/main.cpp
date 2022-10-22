@@ -8,7 +8,7 @@
 
 #include "InputValidation.hpp"
 #include "Statistic.hpp"
-#include "DataWrapper.cpp"
+#include "DataWrapper.hpp"
 
 namespace fs = std::experimental::filesystem;
 
@@ -80,8 +80,6 @@ void startCounting(const DataWrapper& data, Statistic& statistics, unsigned int 
     for (std::thread& thread : threads)
         thread.join();
 }
-
-DataWrapper DataWrapper::_dwInstance;
 
 int main(int argc, char** argv)
 {      
