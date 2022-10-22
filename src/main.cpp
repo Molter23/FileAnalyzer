@@ -8,10 +8,11 @@
 
 #include "InputValidation.hpp"
 #include "DataWrapper.cpp"
+#include "Statistic.cpp"
 
 namespace fs = std::experimental::filesystem;
 
-void callculateNumberOfLines(DataWrapper& data, unsigned int start,  unsigned int end)
+void callculateNumberOfLines(const DataWrapper& data, Statistic& statistics, unsigned int start,  unsigned int end)
 {
     unsigned int numberOfLines = 0;
     std::string line;
@@ -25,13 +26,13 @@ void callculateNumberOfLines(DataWrapper& data, unsigned int start,  unsigned in
             numberOfLines++;
         }
 
-        data.numberOfLines.fetch_add(numberOfLines);
+        statistics.numberOfLines.fetch_add(numberOfLines);
 
         numberOfLines = 0;
     }
 }
 
-void collectAllFiles(const std::string& dirName, DataWrapper& data, std::size_t capacityToReserve = 1000)
+void collectAllFiles(const std::string& dirName, DataWrapper& data, Statistic& statistics,  std::size_t capacityToReserve = 1000)
 {
     data.fillesInAllDirectories.reserve(capacityToReserve);
     
@@ -42,7 +43,7 @@ void collectAllFiles(const std::string& dirName, DataWrapper& data, std::size_t 
                 data.fillesInAllDirectories.emplace_back(std::move(path));
             }
         }
-        data.numberOfDiretories = data.fillesInAllDirectories.size();
+        statistics.numberOfDiretories = data.fillesInAllDirectories.size();
     }
     catch(fs::filesystem_error& e)
     {
@@ -50,14 +51,15 @@ void collectAllFiles(const std::string& dirName, DataWrapper& data, std::size_t 
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const DataWrapper& obj)
+std::ostream& operator<<(std::ostream& os, const Statistic& obj)
 {
     return os << "Number of directories: " << obj.numberOfDiretories << std::endl << "Number of lines: " << obj.numberOfLines << std::endl;
 }
 
 DataWrapper DataWrapper::_dwInstance;
+Statistic Statistic::_sInstance;
 
-void startCounting(DataWrapper& data, unsigned int requiredNumberOfThreads = 4)
+void startCounting(DataWrapper& data, Statistic& statistics, unsigned int requiredNumberOfThreads = 4)
 {
     unsigned int numberOfPhysicalThread = std::thread::hardware_concurrency();
     unsigned int numberOfThreads = std::min(requiredNumberOfThreads, numberOfPhysicalThread);
@@ -69,7 +71,7 @@ void startCounting(DataWrapper& data, unsigned int requiredNumberOfThreads = 4)
 
     for (int i = 0; i < numberOfThreads; i++)
     {
-        threads[i] = std::thread(callculateNumberOfLines, std::ref(data), start, end);
+        threads[i] = std::thread(callculateNumberOfLines, std::ref(data), std::ref(statistics), start, end);
 
         start += blockSize;
         end += blockSize;
@@ -86,12 +88,13 @@ void startCounting(DataWrapper& data, unsigned int requiredNumberOfThreads = 4)
 int main(int argc, char** argv)
 {      
     DataWrapper& data = DataWrapper::get();
+    Statistic& statistics = Statistic::get();
     
     auto dirName = validateInput(argc, argv);
-    collectAllFiles(dirName, data);
+    collectAllFiles(dirName, data, statistics);
    //callculateNumberOfLines(data, 0, data.fillesInAllDirectories.size());
-   startCounting(data);
-    std::cout<< data;
+    startCounting(data, statistics);
+    std::cout<< statistics;
   
 
 }
