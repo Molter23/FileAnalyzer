@@ -1,13 +1,6 @@
 #include<iostream>
-#include<experimental/filesystem>
-#include<fstream>
-#include<stdexcept>
-#include<vector>
-#include<string>
-#include<thread>
 
 #include "Analyzer.hpp"
-
 
 int main(int argc, char** argv)
 {      
