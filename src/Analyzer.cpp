@@ -18,6 +18,7 @@ void callculateNumberOfLines(const DataWrapper& data, Statistic& statistics, uns
     unsigned int numberOfLines = 0;
     std::string line;
 
+    
     for (int i = start; i < end; i++)
     {
         std::ifstream file(data.fillesInAllDirectories[i].path());
@@ -67,11 +68,11 @@ void startCounting(const DataWrapper& data, Statistic& statistics, unsigned int 
     {
         threads[i] = std::thread(callculateNumberOfLines, std::ref(data), std::ref(statistics), start, end);
 
-        start += blockSize;
+        start = end;
         end += blockSize;
         
         if(end > data.fillesInAllDirectories.size())
-            end = data.fillesInAllDirectories.size() - 1;
+            end = data.fillesInAllDirectories.size();
     }
     
     for (std::thread& thread : threads)

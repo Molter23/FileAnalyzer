@@ -10,7 +10,7 @@ namespace fs = std::experimental::filesystem;
 class Statistic
 {
 public:
-    std::atomic<uint64_t> numberOfLines;
+    std::atomic<uint64_t> numberOfLines {0};
     uint64_t numberOfDiretories ;
     static Statistic& get();
     Statistic(const Statistic&) = delete;
