@@ -1,7 +1,9 @@
+#include<vector>
+#include<thread>
+
 #include "gtest/gtest.h"
 #include "../src/InputValidation.hpp"
-
-#include<vector>
+#include "../src/Analyzer.hpp"
 
 TEST(ValidationInputTests, TooMuchArgumentsShouldThrow)
 {
@@ -60,10 +62,21 @@ TEST(ValidationInputTests, NotANumberShouldThrow)
    ASSERT_THROW(validateNumberOfThreads("NaN"), std::invalid_argument);
 }
 
-TEST(ValidationInputTests, correctNumberShoulBeTrue)
+TEST(ValidationInputTests, CorrectNumberShoulBeTrue)
 {
    std::string number = "12";
    ASSERT_EQ(validateNumberOfThreads(number), 12);
+}
+
+TEST(AnalyzerTests, TooBigNumberOfThreadsPassed)
+{
+   unsigned int numberOfThreads = calculateNumberOfThreads(std::thread::hardware_concurrency() + 20);
+   ASSERT_EQ(std::thread::hardware_concurrency(), numberOfThreads);
+}
+
+TEST(AnalyzerTests, NormalNumberOfThreadsPassed)
+{
+   ASSERT_EQ(calculateNumberOfThreads(1), 1);
 }
 
 int main(int argc, char **argv) {

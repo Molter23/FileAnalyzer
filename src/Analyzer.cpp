@@ -46,7 +46,6 @@ void collectAllFiles(const std::string& dirName, DataWrapper& data, Statistic& s
     }
 
     statistics.numberOfDiretories = data.fillesInAllDirectories.size();
-    
 }
 
 unsigned int calculateNumberOfThreads(unsigned int requiredNumberOfThreads)
