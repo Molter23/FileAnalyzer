@@ -1,9 +1,11 @@
 #include "gtest/gtest.h"
 #include "../src/InputValidation.hpp"
 
+#include<vector>
+
 TEST(ValidationInputTests, TooMuchArgumentsShouldThrow)
 {
-   ASSERT_THROW(validateLengthOfInput(3), std::invalid_argument);
+   ASSERT_THROW(validateLengthOfInput(4), std::invalid_argument);
 }
 
 TEST(ValidationInputTests, PathNotSpecifiedShouldThrow)
@@ -28,19 +30,41 @@ TEST(ValidationInputTests, CorrectPathShoulNotThrow)
 
 TEST(ValidationInputTests, ValidateInputExitCode)
 {
-   char* first_arg = "programName";
-   char* second_arg = "path";
-   char* third_arg = "somethingElse";
+   std::vector<char*> argsVect = {strdup("prgram name"), strdup("something"), strdup("something")};
 
-   char** argv = new char*;
-   argv[0] = first_arg;
-   argv[1] = second_arg; 
-   argv[2] = third_arg;
-
-   ASSERT_EXIT(validateInput(1,argv), ::testing::ExitedWithCode(1), "Wrong input");
+   ASSERT_EXIT(validateInput(argsVect.size(), argsVect.data()), ::testing::ExitedWithCode(1), "Wrong input");
 }
 
+TEST(ValidationInputTests, ValidateCorrectInputWithNumberOfThreads)
+{
+   std::vector<char*> argsVect = {strdup("prgram name"), strdup("/bin"), strdup("2")};
 
+   auto [dirName, numberOfThreads] = validateInput(argsVect.size(), argsVect.data());
+
+   ASSERT_EQ(dirName, "/bin");
+   ASSERT_EQ(numberOfThreads, 2);
+}
+
+TEST(ValidationInputTests, ValidateCorrectInputWithoutNumberOfThreads)
+{
+   std::vector<char*> argsVect = {strdup("prgram name"), strdup("/bin") };
+
+   auto [dirName, numberOfThreads] = validateInput(argsVect.size(), argsVect.data());
+
+   ASSERT_EQ(dirName, "/bin");
+   ASSERT_EQ(numberOfThreads, 4);
+}
+
+TEST(ValidationInputTests, NotANumberShouldThrow)
+{
+   ASSERT_THROW(validateNumberOfThreads("NaN"), std::invalid_argument);
+}
+
+TEST(ValidationInputTests, correctNumberShoulBeTrue)
+{
+   std::string number = "12";
+   ASSERT_EQ(validateNumberOfThreads(number), 12);
+}
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

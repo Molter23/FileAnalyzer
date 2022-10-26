@@ -2,23 +2,26 @@
 #include<experimental/filesystem>
 #include<fstream>
 #include<stdexcept>
+#include<string>
+#include<utility>
 
 namespace fs = std::experimental::filesystem;
 
 void usage(const std::string& programName)
 {
     std::cout <<"Usage: " << std::endl << std::endl;
-    std::cout << "\t" << programName << " [path to directory]" << std::endl << std::endl;
+    std::cout << "\t" << programName << " [path to directory] <number of threads>" << std::endl << std::endl;
 }
 
-void validateLengthOfInput(int argc)
-{
-    if(argc > 2)
-        throw std::invalid_argument("Too many arguments spcified.");
-        
+unsigned int validateLengthOfInput(unsigned int argc)
+{    
     if(argc == 1)
         throw std::invalid_argument("Path not spcified.");
 
+    if(argc > 3)
+        throw std::invalid_argument("Too many arguments spcified.");
+    
+    return argc;
 }
 
 void validatePath(const std::string& dirName)
@@ -27,21 +30,39 @@ void validatePath(const std::string& dirName)
         throw std::invalid_argument("Given argument is not a path to directory.");
 }
 
-std::string validateInput(int argc, char** argv)
+unsigned int validateNumberOfThreads(const std::string& numberOfThreads)
 {
-    try{
-        validateLengthOfInput(argc);
+    return std::stoi(numberOfThreads);
+}
 
-        std::string dirName = argv[1];
+void errorMessage(const std::string& programName, const std::exception& e)
+{
+    std::cout << e.what() << std::endl;
+    usage(programName);
+    std::cerr << "Wrong input" << std::endl;
+    exit(EXIT_FAILURE);
+}
+
+std::pair<std::string, unsigned int> validateInput(int argc, char** argv)
+{
+    unsigned int numberOfThreads = 4;
+    std::string dirName = "";
+    try{
+        unsigned int numberOfArgs = validateLengthOfInput(argc);
+ 
+        if (numberOfArgs == 3){
+            numberOfThreads = validateNumberOfThreads(argv[2]);
+        }
+        dirName = argv[1];
         validatePath(dirName);
 
-    } catch(const std::invalid_argument& e) {   
-        std::cout << e.what() << std::endl;
-        std::string programName = argv[0];
-        usage(programName);
-        std::cerr << "Wrong input" << std::endl;
-        exit(EXIT_FAILURE);
-    }       
+    } catch(std::invalid_argument const& e) {   
+        errorMessage(argv[0], e);
+    }
+    catch(std::out_of_range const& e)
+    {
+        errorMessage(argv[0], e);
+    }
     
-    return argv[1];
+    return std::pair<std::string, unsigned int>(dirName, numberOfThreads);
 }
