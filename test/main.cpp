@@ -79,6 +79,43 @@ TEST(AnalyzerTests, NormalNumberOfThreadsPassed)
    ASSERT_EQ(calculateNumberOfThreads(1), 1);
 }
 
+TEST(AnalyzerTests, ResultShouldBeThreadIndependent)
+{
+   DataWrapper& data = DataWrapper::get();
+   Statistic& statistics = Statistic::get();
+    
+   std::string dirName = "/bin";
+
+   collectAllFiles(dirName, data, statistics);
+
+   startCounting(data, statistics, 1);
+   uint64_t resultForOneThread = statistics.numberOfLines.load();
+   statistics.numberOfLines.store(0);
+
+   startCounting(data, statistics, 2);
+   uint64_t resultForTwoThreads = statistics.numberOfLines.load();
+   statistics.numberOfLines.store(0);
+
+   
+
+   ASSERT_EQ(resultForOneThread, resultForTwoThreads);
+
+   if (std::thread::hardware_concurrency()  > 4)    
+   {
+      startCounting(data, statistics, 3); 
+      uint64_t resultForThreeThreads = statistics.numberOfLines.load();
+      statistics.numberOfLines.store(0);
+
+      startCounting(data, statistics, 4);
+      uint64_t resultForFourThreads = statistics.numberOfLines.load(); 
+      statistics.numberOfLines.store(0);
+
+      ASSERT_EQ(resultForOneThread, resultForThreeThreads);
+      ASSERT_EQ(resultForOneThread, resultForFourThreads);
+   }
+
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
