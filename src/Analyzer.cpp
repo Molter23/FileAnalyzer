@@ -37,19 +37,15 @@ void collectAllFiles(const std::string& dirName, DataWrapper& data, Statistic& s
 {
     data.fillesInAllDirectories.reserve(capacityToReserve);
     
-    try{
-        for (auto const& path : fs::recursive_directory_iterator(dirName, std::experimental::filesystem::v1::directory_options::skip_permission_denied))
-        {
-            if(fs::is_regular_file(fs::status(path))){    
-                data.fillesInAllDirectories.emplace_back(std::move(path));
-            }
-        }
-        statistics.numberOfDiretories = data.fillesInAllDirectories.size();
-    }
-    catch(fs::filesystem_error& e)
+    for (auto const& path : fs::recursive_directory_iterator(dirName, std::experimental::filesystem::v1::directory_options::skip_permission_denied))
     {
-      std::cout << "Unable to access file." << std::endl;
+         if(fs::is_regular_file(fs::status(path))){    
+            data.fillesInAllDirectories.emplace_back(std::move(path));
+        }
     }
+
+    statistics.numberOfDiretories = data.fillesInAllDirectories.size();
+    
 }
 
 unsigned int calculateNumberOfThreads(unsigned int requiredNumberOfThreads)
