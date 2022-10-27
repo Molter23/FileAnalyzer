@@ -1,6 +1,7 @@
 #include<iostream>
 
 #include "Analyzer.hpp"
+#include "Timer.hpp"
 
 int main(int argc, char** argv)
 {      
@@ -9,6 +10,9 @@ int main(int argc, char** argv)
     
     auto [dirName, numberOfThreads]  = validateInput(argc, argv);
     collectAllFiles(dirName, data, statistics);
-    startCounting(data, statistics, numberOfThreads);
+    {
+        Timer timer;
+        startCounting(data, statistics, numberOfThreads);
+    }
     std::cout << statistics;
 }
