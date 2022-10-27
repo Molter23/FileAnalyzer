@@ -11,7 +11,8 @@ class Statistic
 {
 public:
     std::atomic<uint64_t> numberOfLines {0};
-    uint64_t numberOfDiretories ;
+    std::atomic<uint64_t> numberOfEmptyLines {0};
+    uint64_t numberOfDiretories;
     static Statistic& get();
     Statistic(const Statistic&) = delete;
 private:

@@ -16,6 +16,7 @@ namespace fs = std::experimental::filesystem;
 void callculateNumberOfLines(const DataWrapper& data, Statistic& statistics, unsigned int start,  unsigned int end)
 {
     unsigned int numberOfLines = 0;
+    unsigned int numberOfEmptyLines = 0;
     std::string line;
 
     
@@ -25,12 +26,17 @@ void callculateNumberOfLines(const DataWrapper& data, Statistic& statistics, uns
 
         while(std::getline(file, line))
         {
+            if(line.empty()){
+                numberOfEmptyLines++;
+            }
             numberOfLines++;
         }
 
         statistics.numberOfLines.fetch_add(numberOfLines);
+        statistics.numberOfEmptyLines.fetch_add(numberOfEmptyLines);
 
         numberOfLines = 0;
+        numberOfEmptyLines = 0;
     }
 }
 

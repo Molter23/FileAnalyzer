@@ -17,6 +17,7 @@ Statistic::Statistic() {};
 
 std::ostream& operator<<(std::ostream& os, const Statistic& obj)
 {
-    return os << "Number of directories: " << obj.numberOfDiretories << std::endl << "Number of lines: " << obj.numberOfLines << std::endl;
+    return os << "Number of directories: " << obj.numberOfDiretories << std::endl << "Number of lines: " 
+                << obj.numberOfLines << std::endl << "Number of not empty lines: " <<  obj.numberOfLines - obj.numberOfEmptyLines << std::endl;
 }
 
