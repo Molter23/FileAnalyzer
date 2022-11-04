@@ -1,4 +1,4 @@
-## [Interview project] File Analyzer
+##  File Analyzer
 
 <br>
 This project is a simple directory analazyer, which handles recursive directories too. 
